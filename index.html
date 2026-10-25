@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cactus — Technical Minimal theme</title>
+<meta name="description" content="Cactus: a seven-theme Technical Minimal palette (light, mango, limoncello, aperol, aperol spritz, dark, cactus) with fluid typography tuned for desktop, tablet, mobile, Android/iOS browsers and TV (webOS, Tizen).">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" id="theme-color" content="#f3f2ef">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230e0e0e'/%3E%3Cg fill='%233a3a3a'%3E%3Ccircle cx='9' cy='9' r='3'/%3E%3Ccircle cx='16' cy='9' r='3'/%3E%3Ccircle cx='23' cy='9' r='3'/%3E%3Ccircle cx='9' cy='16' r='3'/%3E%3Ccircle cx='23' cy='16' r='3'/%3E%3Ccircle cx='9' cy='23' r='3'/%3E%3Ccircle cx='16' cy='23' r='3'/%3E%3Ccircle cx='23' cy='23' r='3'/%3E%3C/g%3E%3Ccircle cx='16' cy='16' r='3.4' fill='%23ff5a1f'/%3E%3C/svg%3E">
+<script>
+  (function () {
+    var d = document.documentElement, t = null, seen = null;
+    try { t = localStorage.getItem('cactus-theme'); } catch (e) {}
+    var q = location.search.match(/[?&]theme=(light|mango|limoncello|aperol|spritz|dark|cactus)/);
+    if (q) t = q[1];
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    if (location.search.indexOf('nosplash') > -1) seen = '1';   /* skip: ?nosplash=1 (print/screenshot) */
+    if (location.search.indexOf('noanim') > -1) d.classList.add('no-anim'); /* print / screenshot hook */
+    d.dataset.theme = t;
+    document.getElementById('theme-color').content = ({
+      light:'#f3f2ef', mango:'#f7f3ea', limoncello:'#fffef9', aperol:'#fff7f2',
+      spritz:'#fffdf9', dark:'#0e0e0e', cactus:'#0a0e0b'
+    })[t] || '#f3f2ef';
+    if (!seen && !location.hash && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      d.classList.add('is-splash');
+      setTimeout(function () { d.classList.remove('is-splash'); }, 6000); /* hard fallback */
+    }
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- fonts load async: splash must never wait on a render-blocking stylesheet -->
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@700;900&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Doto:wght@700;900&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+<style>
+  /* ============================================================
+     CACTUS — tokens (single owner: everything below reads vars)
+     ============================================================ */
+  :root, [data-theme="light"] {
+    --bg:#f3f2ef; --surface:#fbfaf8; --line:#d9d6d0; --line-strong:#bdb9b1;
+    --text:#141413; --muted:#5f5b55;
+    --accent:#e5481a; --accent-ink:#b3360f; --on-accent:#141413; /* dark ink on orange = 4.67:1 */
+    --dot:#cfcbc4; --band:#ecebe6;
+    --hc-lum:.48; --hc-chroma:.14;
+  }
+  [data-theme="dark"] {
+    --bg:#0e0e0e; --surface:#151515; --line:#262626; --line-strong:#3a3a3a;
+    --text:#ecebe8; --muted:#9a968f;
+    --accent:#ff5a1f; --accent-ink:#ff7a45; --on-accent:#0e0e0e;
+    --dot:#2b2b2b; --band:#131313;
+    --hc-lum:.76; --hc-chroma:.12;
+  }
+  /* Cactus: dark green-black paper, cactus-green LED */
+  [data-theme="cactus"] {
+    --bg:#0a0e0b; --surface:#101512; --line:#1f2a22; --line-strong:#314136;
+    --text:#e9f0e9; --muted:#93a294;
+    --accent:#35d06a; --accent-ink:#5fe08d; --on-accent:#06120a;
+    --dot:#1c2a20; --band:#0d120e;
+    --hc-lum:.76; --hc-chroma:.12;
+  }
+  /* Mango: warm light paper, mango-amber LED (accent ≥3:1, ink-on-accent ≥5:1) */
+  [data-theme="mango"] {
+    --bg:#f7f3ea; --surface:#fffdf8; --line:#e7dfce; --line-strong:#d2c6ac;
+    --text:#171310; --muted:#6b6154;
+    --accent:#d2700a; --accent-ink:#8f5200; --on-accent:#171310;
+    --dot:#ded5c2; --band:#f1ebdf;
+    --hc-lum:.48; --hc-chroma:.14;
+  }
+  /* Limoncello: brightest lemon paper, golden-lemon LED (accent capped at 3:1 max) */
+  [data-theme="limoncello"] {
+    --bg:#fffef9; --surface:#ffffff; --line:#f4f0dd; --line-strong:#e4dfba;
+    --text:#191708; --muted:#77704d;
+    --accent:#b08d00; --accent-ink:#8a6c00; --on-accent:#191708;
+    --dot:#ebe6c8; --band:#fbf8e8;
+    --hc-lum:.48; --hc-chroma:.14;
+  }
+  /* Aperol: peach paper, aperol orange-red LED */
+  [data-theme="aperol"] {
+    --bg:#fff7f2; --surface:#fffdfb; --line:#f2e2d8; --line-strong:#dcc0b1;
+    --text:#1a0f0a; --muted:#6d564b;
+    --accent:#e24a18; --accent-ink:#b03a10; --on-accent:#1a0d08;
+    --dot:#eddcd2; --band:#fdeee6;
+    --hc-lum:.48; --hc-chroma:.14;
+  }
+  /* Aperol Spritz: near-white fizz paper, brighter spritz orange */
+  [data-theme="spritz"] {
+    --bg:#fffdf9; --surface:#ffffff; --line:#f4e6dc; --line-strong:#e0c6b6;
+    --text:#1b110b; --muted:#6e5a4f;
+    --accent:#f2622b; --accent-ink:#b8430f; --on-accent:#1c0f08;
+    --dot:#f0e0d5; --band:#fdf1e9;
+    --hc-lum:.48; --hc-chroma:.14;
+  }
+
+  /* ---------- fluid type: root font-size drives EVERYTHING (rem) ---------- */
+  html { font-size: 16px; }                                                     /* phone       */
+  @media (min-width:600px)  { html { font-size: clamp(16px, 15.3px + .55vw, 18px); } }  /* tablet      */
+  @media (min-width:1024px) { html { font-size: clamp(17px, 15.2px + .38vw, 20px); } }  /* desktop     */
+  @media (min-width:1600px) { html { font-size: clamp(22px, 16px + .6vw, 26px); } }      /* TV 1080p    */
+  @media (min-width:2560px) { html { font-size: clamp(26px, 18px + .35vw, 34px); } }     /* 2K / 4K     */
+
+  :root {
+    --fs-display: clamp(2.75rem, 1.4rem + 5.4vw, 6rem);
+    --fs-h1:      clamp(2rem,   1.35rem + 3vw, 3.5rem);
+    --fs-h2:      clamp(1.5rem, 1.15rem + 1.7vw, 2.3rem);
+    --fs-lead:    clamp(1rem,   .95rem + .35vw, 1.3rem);
+    --fs-body:    1rem;
+    --fs-sm:      .875rem;
+    --fs-mono:    .8125rem;
+    --tap: 44px;                       /* min touch target (coarse pointer) */
+    --wrap: 1200px;
+    --pad: 32px;
+    --ease: cubic-bezier(.16, 1, .3, 1);
+  }
+  @media (pointer:coarse) { :root { --tap: 48px; } }
+  /* TV / 10-foot: bigger copy, wider measure, roomier targets */
+  @media (min-width:1600px) {
+    :root { --wrap:1500px; --pad:64px; --tap:56px; --fs-body:1.05rem; --fs-mono:.9rem; }
+    body { line-height:1.7 }
+    :focus-visible { outline-width:3px; outline-offset:4px }
+  }
+  @media (min-width:600px) and (max-width:1023px) { :root { --pad:28px; --wrap:960px } }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;scroll-padding-top:72px;scrollbar-color:var(--line-strong) var(--bg);-webkit-text-size-adjust:100%}
+  body{
+    background:var(--bg);color:var(--text);
+    font:400 var(--fs-body)/1.6 Geist,system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    transition:background-color .35s ease,color .35s ease;
+    overscroll-behavior-y:none;
+    padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right);
+  }
+  ::selection{background:var(--accent);color:var(--on-accent)}
+  ::-webkit-scrollbar{width:10px}
+  ::-webkit-scrollbar-track{background:var(--bg)}
+  ::-webkit-scrollbar-thumb{background:var(--line-strong);border:3px solid var(--bg);border-radius:10px}
+  a{color:inherit;text-decoration:none}
+  a,button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
+  .skip{position:fixed;top:10px;left:10px;z-index:60;padding:12px 16px;border-radius:8px;background:var(--text);color:var(--bg);font:500 var(--fs-mono)/1 "Geist Mono",monospace;transform:translateY(-160%);transition:transform .2s var(--ease)}
+  .skip:focus-visible{transform:none}
+  .mono{font-family:"Geist Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;letter-spacing:.06em}
+  .wrap{max-width:var(--wrap);margin:0 auto;padding:0 var(--pad)}
+
+  /* ============================ top bar ============================ */
+  .bar{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .bar .wrap{display:flex;align-items:center;justify-content:space-between;height:56px;gap:16px}
+  @media (min-width:1600px){.bar .wrap{height:72px}}
+  .handle{display:flex;align-items:center;gap:10px;font-size:var(--fs-sm);font-weight:500}
+  .led{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent);flex:none}
+  .bar-right{display:flex;align-items:center;gap:20px;font-size:var(--fs-mono);color:var(--muted)}
+  .count{display:none}
+  @media (min-width:760px){.count{display:inline}}
+  .toggle{
+    display:inline-flex;align-items:center;gap:8px;cursor:pointer;
+    font:500 var(--fs-mono)/1 "Geist Mono",monospace;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--text);background:var(--surface);border:1px solid var(--line);
+    min-height:var(--tap);padding:0 16px;border-radius:999px;
+    transition:border-color .2s,transform .15s;position:relative;
+  }
+  .toggle:hover{border-color:var(--text)}
+  .toggle:active{transform:scale(.96)}
+  .toggle svg{width:15px;height:15px;flex:none}
+  .tdot{width:14px;height:14px;border-radius:50%;background:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 60%,#000 40%);flex:none}
+
+  /* ============================ hero ============================ */
+  .hero{
+    border-bottom:1px solid var(--line);
+    background-image:radial-gradient(var(--dot) 1.2px,transparent 1.2px);
+    background-size:16px 16px;background-position:-8px -8px;
+  }
+  .hero .wrap{
+    padding-top:clamp(56px,8vw,128px);padding-bottom:clamp(40px,5vw,80px);
+    display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:clamp(24px,4vw,56px);align-items:end;
+  }
+  .kicker{font-size:var(--fs-mono);text-transform:uppercase;color:var(--muted);margin-bottom:20px}
+  h1{
+    font-family:Doto,"Geist Mono",monospace;font-weight:900;
+    font-size:var(--fs-display);line-height:.95;letter-spacing:-.02em;text-wrap:balance;
+    animation:wipe 1.4s var(--ease) both;
+  }
+  h1 .hot{color:var(--accent)}
+  @keyframes wipe{from{clip-path:inset(0 100% 0 0);filter:blur(6px)}to{clip-path:inset(0 0 0 0);filter:blur(0)}}
+  .lead{font-size:var(--fs-lead);color:var(--muted);max-width:46ch;margin-top:20px}
+  .lead strong{color:var(--text);font-weight:500}
+  .cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:32px}
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;min-height:var(--tap);padding:0 18px;border-radius:8px;
+    font:500 var(--fs-mono)/1 "Geist Mono",monospace;letter-spacing:.08em;text-transform:uppercase;
+    border:1px solid var(--line-strong);background:var(--surface);color:var(--text);
+    transition:border-color .2s,background .2s,transform .15s;
+  }
+  .btn:hover{border-color:var(--accent);color:var(--accent-ink)}
+  .btn:active{transform:scale(.97)}
+  .btn.hot{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+  .btn.hot:hover{filter:brightness(1.08);color:var(--on-accent)}
+
+  /* live readout panel */
+  .readout{border:1px solid var(--line);background:color-mix(in srgb,var(--surface) 92%,transparent);border-radius:8px;overflow:hidden}
+  .readout h2{font:500 var(--fs-mono)/1.3 "Geist Mono",monospace;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding:14px 16px;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px}
+  .readout h2 b{color:var(--accent-ink);font-weight:500}
+  .readout dl{display:grid;grid-template-columns:1fr auto}
+  .readout dt,.readout dd{padding:11px 16px;border-bottom:1px solid var(--line);font-size:var(--fs-mono)}
+  .readout dt{color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+  .readout dd{text-align:right;font-weight:500}
+  .readout dl > :nth-last-child(-n+2){border-bottom:0}
+
+  /* ============================ index nav ============================ */
+  .index{border-bottom:1px solid var(--line)}
+  .index ul{list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+  .index li{border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .index a{display:flex;align-items:center;gap:12px;padding:18px 20px;min-height:var(--tap);font-size:var(--fs-sm);font-weight:500;transition:background-color .2s,color .2s}
+  .index a:hover{background:var(--surface);color:var(--hc)}
+  .index .n{font-size:var(--fs-mono);color:var(--muted);margin-left:auto}
+  .sw{width:8px;height:8px;border-radius:2px;background:var(--hc);flex:none}
+
+  /* ============================ sections ============================ */
+  main{display:block}
+  .section-block{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);border-bottom:1px solid var(--line);scroll-margin-top:56px}
+  .section-head{padding:48px 40px 48px 0;border-right:1px solid var(--line)}
+  .section-head > *{position:relative}
+  @media (min-width:1024px){.section-head .stick{position:sticky;top:96px}}
+  .section-head .top{display:flex;align-items:center;gap:10px;color:var(--hc);margin-bottom:28px}
+  .section-head .top .mono{font-size:var(--fs-mono);color:var(--muted);text-transform:uppercase}
+  .section-head h2{font-size:var(--fs-h2);font-weight:600;line-height:1.1;letter-spacing:-.025em;margin-bottom:12px}
+  .section-head p{color:var(--muted);font-size:var(--fs-sm);max-width:36ch}
+  .body{padding:32px 0 48px;min-width:0}
+  .section-block:nth-of-type(even){background:var(--band);box-shadow:0 0 0 100vmax var(--band);clip-path:inset(0 -100vmax)}
+  [style*="--h"]{--hc:oklch(var(--hc-lum) var(--hc-chroma) var(--h))}
+
+  .body h3{font-size:var(--fs-sm);text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:500;margin:0 0 14px;font-family:"Geist Mono",monospace}
+  .body p{max-width:64ch;color:var(--muted);margin-bottom:18px}
+  .body p strong{color:var(--text);font-weight:500}
+
+  /* kinetic rows */
+  .rows{list-style:none}
+  .row{
+    position:relative;display:grid;grid-template-columns:minmax(0,200px) minmax(0,1fr) 92px 20px;
+    gap:24px;align-items:baseline;padding:18px 0 18px 40px;
+    border-bottom:1px solid var(--line);isolation:isolate;
+  }
+  .rows li:last-child .row{border-bottom:0}
+  .row::before{
+    content:"";position:absolute;inset:0 0 0 24px;z-index:-1;
+    background:color-mix(in oklch,var(--hc) 9%,var(--surface));
+    transform:scaleX(0);transform-origin:left;transition:transform .45s var(--ease);
+  }
+  .row:hover::before,.row:focus-within::before{transform:scaleX(1)}
+  .row .slug{font-family:"Geist Mono",monospace;font-variant-numeric:tabular-nums;font-size:var(--fs-mono);color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .row .t{font-weight:500}
+  .row .d{display:block;color:var(--muted);font-size:var(--fs-sm);margin-top:4px;max-width:56ch}
+  .row .k{font-family:"Geist Mono",monospace;font-size:var(--fs-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);justify-self:end;text-align:right}
+  .row .k.hl{color:var(--hc)}
+  .row .arr{width:16px;height:16px;justify-self:end;color:var(--muted);transition:transform .3s var(--ease),color .2s}
+  .row:hover .arr{transform:translate(3px,-3px);color:var(--hc)}
+  .row:hover .t{color:var(--hc)}
+
+  /* spec definition list (Needle-style) */
+  .spec{border-top:1px solid var(--line)}
+  .spec > div{display:grid;grid-template-columns:minmax(0,240px) minmax(0,1fr);gap:24px;padding:14px 0;border-bottom:1px solid var(--line)}
+  .spec dt{font-weight:500}
+  .spec dd{color:var(--muted);font-family:"Geist Mono",monospace;font-variant-numeric:tabular-nums;font-size:var(--fs-mono);text-align:right}
+  @media (max-width:600px){
+    .spec > div{grid-template-columns:1fr;gap:4px}
+    .spec dd{text-align:left}
+  }
+
+  /* tables */
+  .tbl{width:100%;border-collapse:collapse;font-size:var(--fs-sm)}
+  .tbl th,.tbl td{border-bottom:1px solid var(--line);padding:12px 14px;text-align:left;vertical-align:top}
+  .tbl th{font:500 var(--fs-mono)/1.3 "Geist Mono",monospace;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);border-bottom-color:var(--line-strong)}
+  .tbl td.num{font-family:"Geist Mono",monospace;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .tbl tr:hover td{background:color-mix(in oklch,var(--hc) 7%,transparent)}
+  .tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  @media (max-width:700px){ .tbl .hide-s{display:none} }
+
+  /* scale preview */
+  .scale{border-top:1px solid var(--line)}
+  .scale > div{display:grid;grid-template-columns:minmax(0,190px) minmax(0,1fr) minmax(0,84px);gap:20px;align-items:baseline;padding:16px 0;border-bottom:1px solid var(--line)}
+  .scale .tok{font-family:"Geist Mono",monospace;font-size:var(--fs-mono);color:var(--muted)}
+  .scale .px{font-family:"Geist Mono",monospace;font-variant-numeric:tabular-nums;font-size:var(--fs-mono);text-align:right;color:var(--hc)}
+  .scale .demo{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .s-display{font-family:Doto,"Geist Mono",monospace;font-weight:900;font-size:var(--fs-display);line-height:1}
+  .s-h1{font-size:var(--fs-h1);font-weight:600;letter-spacing:-.02em}
+  .s-h2{font-size:var(--fs-h2);font-weight:600}
+  .s-lead{font-size:var(--fs-lead)}
+  .s-body{font-size:var(--fs-body)}
+  .s-sm{font-size:var(--fs-sm)}
+  .s-mono{font-family:"Geist Mono",monospace;font-size:var(--fs-mono);font-variant-numeric:tabular-nums}
+  @media (max-width:600px){
+    .scale > div{grid-template-columns:1fr auto;gap:6px 12px}
+    .scale .demo{grid-column:1/-1;order:3}
+  }
+
+  /* palette grid */
+  .pal{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+  .pal div{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
+  .pal i{display:block;height:56px;border-bottom:1px solid var(--line)}
+  .pal span{display:block;padding:10px 12px;font-family:"Geist Mono",monospace;font-size:var(--fs-mono);line-height:1.5}
+  .pal span b{display:block;font-weight:500;text-transform:uppercase;letter-spacing:.08em}
+  .pal span em{font-style:normal;color:var(--muted)}
+
+  /* theme pills */
+  .tpills{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+  .tpills button{
+    display:inline-flex;align-items:center;gap:9px;min-height:var(--tap);padding:0 14px;border-radius:999px;
+    border:1px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer;
+    font:500 var(--fs-mono)/1 "Geist Mono",monospace;letter-spacing:.08em;text-transform:uppercase;
+    transition:border-color .2s,color .2s,transform .15s;
+  }
+  .tpills button:hover{border-color:var(--line-strong);color:var(--text)}
+  .tpills button:active{transform:scale(.97)}
+  .tpills button::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--pc);border:1px solid var(--line-strong)}
+  .tpills button[aria-current="true"]{border-color:var(--accent);color:var(--text);box-shadow:0 0 0 1px var(--accent) inset}
+
+  /* hue wheel */
+  .hue{display:flex;flex-wrap:wrap;gap:8px;list-style:none}
+  .hue li{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-family:"Geist Mono",monospace;font-size:var(--fs-mono);color:var(--muted)}
+  .hue i{width:10px;height:10px;border-radius:50%;background:oklch(var(--hc-lum) var(--hc-chroma) var(--h))}
+
+  /* code block */
+  .code{border:1px solid var(--line);border-radius:8px;background:var(--surface);overflow:hidden;margin-top:8px}
+  .code header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;border-bottom:1px solid var(--line);font-family:"Geist Mono",monospace;font-size:var(--fs-mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+  .code pre{overflow-x:auto;padding:16px;-webkit-overflow-scrolling:touch}
+  .code code{font-family:"Geist Mono",monospace;font-size:var(--fs-mono);line-height:1.7;white-space:pre;color:var(--text)}
+  .code .c{color:var(--muted)}
+  .code .v{color:var(--accent-ink)}
+  [data-theme="dark"] .code .v{color:var(--accent-ink)}
+
+  /* signature demo strip */
+  .sig{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+  .sig article{border:1px solid var(--line);border-radius:8px;padding:18px;background:var(--surface)}
+  .sig h4{font-family:"Geist Mono",monospace;font-size:var(--fs-mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:500;margin-bottom:10px}
+  .sig .dotgrid{height:72px;border:1px solid var(--line);border-radius:6px;background-image:radial-gradient(var(--dot) 1.2px,transparent 1.2px);background-size:16px 16px;background-position:-8px -8px}
+  .sig .hair{display:flex;flex-direction:column;gap:9px;padding:8px 0}
+  .sig .hair i{display:block;height:1px;background:var(--line)}
+  .sig .hair i:nth-child(2){background:var(--line-strong)}
+  .sig .ledrow{display:flex;align-items:center;gap:10px;font-family:"Geist Mono",monospace;font-size:var(--fs-mono);color:var(--muted)}
+
+  /* footer */
+  footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-top:40px;padding-bottom:calc(56px + env(safe-area-inset-bottom));font-size:var(--fs-mono);color:var(--muted)}
+  footer a{color:var(--text);border-bottom:1px solid var(--line-strong);transition:border-color .2s}
+  footer a:hover{border-color:var(--accent)}
+
+  /* ============================ splash ============================ */
+  .sp{
+    position:fixed;inset:0;z-index:100;display:none;flex-direction:column;
+    background-color:var(--bg);color:var(--text);cursor:pointer;user-select:none;-webkit-user-select:none;
+    background-image:radial-gradient(var(--dot) 1.2px,transparent 1.2px);
+    background-size:16px 16px;background-position:-8px -8px;
+  }
+  html.is-splash{overflow:hidden}
+  html.is-splash .sp{display:flex}
+  html.is-splash h1{animation-play-state:paused}
+  .sp-top{flex:none;border-bottom:1px solid var(--line);background:var(--bg)}
+  .sp-top .wrap{display:flex;align-items:center;justify-content:space-between;height:56px;gap:16px}
+  .sp .led{animation:blink .9s steps(2,jump-none) infinite}
+  .sp.ready .led{animation:none}
+  @keyframes blink{50%{opacity:.25}}
+  .sp-mid{flex:1;display:flex;flex-direction:column;justify-content:center;gap:28px;width:min(760px,100% - 40px);margin:0 auto}
+  .sp-mx{display:block;width:100%;height:auto;overflow:visible}
+  .sp-mx pattern circle{fill:var(--dot)}
+  [data-theme="light"] .sp-mx .off{opacity:.6}
+  .sp-mx .on{fill:var(--text);transform-box:fill-box;transform-origin:center;animation:dot-on .32s var(--d) cubic-bezier(.34,1.56,.64,1)}
+  .sp-mx .hot{fill:var(--accent)}
+  [data-theme="dark"] .sp-mx .hot{filter:drop-shadow(0 0 4px var(--accent))}
+  @keyframes dot-on{from{transform:scale(.3)}to{transform:scale(1)}}
+  .sp-bar{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:6px}
+  .sp-bar i{display:block;height:6px;border-radius:2px;background:var(--line);overflow:hidden}
+  .sp-bar i::after{content:"";display:block;height:100%;background:var(--hc);transform:scaleX(0);transform-origin:left;animation:seg .3s calc(200ms + var(--i) * 160ms) var(--ease) forwards}
+  @keyframes seg{to{transform:scaleX(1)}}
+  .sp-meta{display:flex;justify-content:space-between;gap:16px;font-family:"Geist Mono",monospace;font-size:var(--fs-mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+  .sp-meta b{font-weight:500;color:var(--text)}
+  .sp-meta b::before{content:"› ";color:var(--accent)}
+  .sp-foot{flex:none;border-top:1px solid var(--line);background:var(--bg)}
+  .sp-foot .wrap{display:flex;align-items:center;justify-content:space-between;height:56px;font-family:"Geist Mono",monospace;font-size:var(--fs-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+  .sp-foot kbd{display:inline-block;padding:2px 6px;margin-left:6px;border:1px solid var(--line-strong);border-radius:4px;font:inherit}
+  .sp-foot .tap{display:none}
+  .sp.out{animation:fade-out .42s var(--ease) forwards}
+  @keyframes fade-out{to{opacity:0;transform:scale(1.015);filter:blur(4px)}}
+
+  @media (pointer:coarse){.sp-foot .key{display:none}.sp-foot .tap{display:inline}}
+  @media (prefers-reduced-motion:reduce){*{animation-duration:.001ms !important;transition-duration:.001ms !important}.sp{display:none !important}}
+  .no-anim *,.no-anim *::before,.no-anim *::after{animation:none !important;transition:none !important}
+  .no-anim .sp{display:none !important}
+  .no-anim .sp-mx .on{opacity:1}
+
+  /* ============================ responsive layout ============================ */
+  @media (max-width:1023px){
+    .hero .wrap{grid-template-columns:1fr;gap:32px;align-items:start}
+    .section-block{grid-template-columns:1fr}
+    .section-head{padding:32px 0 20px;border-right:0;border-bottom:1px solid var(--line)}
+    .row{grid-template-columns:1fr auto;gap:8px 16px;padding:16px 0 16px 16px}
+    .row .slug{grid-column:1/-1;order:-1}
+    .row .k{grid-column:1;text-align:left;justify-self:start}
+    .row .arr{grid-column:2}
+    .row::before{inset:0 0 0 8px}
+    :root{--pad:20px}
+  }
+  @media (max-width:600px){
+    :root{--pad:16px}
+    .index li{border-right:0}
+    .readout dl{grid-template-columns:1fr auto}
+    .cta .btn{flex:1 1 auto;justify-content:center}
+    .tbl th,.tbl td{padding:10px}
+  }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<!-- Splash Screen -->
+<div class="sp" id="splash" role="dialog" aria-modal="true" aria-label="System Boot">
+  <div class="sp-top"><div class="wrap">
+    <div class="handle mono"><span class="led" aria-hidden="true"></span><span id="brand-splash">CACTUS.SYS</span></div>
+    <span class="mono" style="font-size:var(--fs-mono);color:var(--muted)">THEME // READY</span>
+  </div></div>
+  <div class="sp-mid">
+    <div id="sp-mx"></div>
+    <div class="sp-bar">
+      <i style="--h:35;--i:0"></i><i style="--h:107;--i:1"></i><i style="--h:179;--i:2"></i><i style="--h:251;--i:3"></i><i style="--h:323;--i:4"></i>
+    </div>
+    <div class="sp-meta"><b id="sp-label">Booting</b><span id="sp-count">00/05</span></div>
+  </div>
+  <div class="sp-foot"><div class="wrap">
+    <span><span class="key">Press any key<kbd>↵</kbd></span><span class="tap">Tap anywhere</span> to skip</span>
+    <span>v2026.1</span>
+  </div></div>
+</div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-arrow" viewBox="0 0 16 16"><path d="M4.5 11.5l7-7M5.5 4.5h6v6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
+<div class="bar">
+  <div class="wrap">
+    <a class="handle" href="#"><span class="led" aria-hidden="true"></span><span class="mono" id="brand">CACTUS // THEME</span></a>
+    <div class="bar-right">
+      <span class="count mono" id="status">05 sections · 06 targets</span>
+      <button class="toggle" id="theme" type="button" aria-label="Switch color theme">
+        <span class="tdot" aria-hidden="true"></span>
+        <span id="theme-label">Light</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <div>
+      <p class="kicker mono">Technical Minimal // Nothing · Teenage Engineering</p>
+      <h1><span id="hero-name">Cactus</span> <span class="hot">theme.</span></h1>
+      <p class="lead"><strong>Seven themes</strong> — light, mango, limoncello, aperol, aperol spritz, dark, cactus. One token owner, fluid type that re-scales itself on every screen: phone, tablet, desktop, Android / iOS browser and TV (webOS, Tizen).</p>
+      <div class="cta">
+        <button class="btn hot" id="cta-theme" type="button">Switch theme</button>
+        <a class="btn" href="#typography">Type scale</a>
+        <a class="btn" href="#targets">Targets</a>
+      </div>
+    </div>
+    <aside class="readout" aria-label="Live viewport readout">
+      <h2>Live readout <b class="mono" id="r-bp">DESKTOP</b></h2>
+      <dl>
+        <dt>Viewport</dt><dd class="mono" id="r-w">–</dd>
+        <dt>Root font</dt><dd class="mono" id="r-root">–</dd>
+        <dt>Theme</dt><dd class="mono" id="r-theme">–</dd>
+        <dt>Pointer</dt><dd class="mono" id="r-pointer">–</dd>
+        <dt>Motion</dt><dd class="mono" id="r-motion">–</dd>
+        <dt>DPR</dt><dd class="mono" id="r-dpr">–</dd>
+      </dl>
+    </aside>
+  </div>
+</header>
+
+<nav class="index" aria-label="Sections">
+  <div class="wrap">
+    <ul>
+      <li><a href="#typography" style="--h:35"><span class="sw"></span>Typography <span class="n mono">06</span></a></li>
+      <li><a href="#theme" style="--h:107"><span class="sw"></span>Theme <span class="n mono">07</span></a></li>
+      <li><a href="#targets" style="--h:179"><span class="sw"></span>Targets <span class="n mono">06</span></a></li>
+      <li><a href="#components" style="--h:251"><span class="sw"></span>Components <span class="n mono">05</span></a></li>
+      <li><a href="#signature" style="--h:323"><span class="sw"></span>Signature <span class="n mono">04</span></a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="wrap" id="main" tabindex="-1">
+
+  <!-- 01 TYPOGRAPHY -->
+  <section class="section-block" id="typography" style="--h:35">
+    <div class="section-head"><div class="stick">
+      <div class="top"><span class="sw"></span><span class="mono">01 // TYPOGRAPHY</span></div>
+      <h2>Type follows the screen</h2>
+      <p>Root font-size steps through breakpoints; every size below is <span class="mono">rem</span>, so the whole scale follows. <span class="mono">clamp()</span> keeps each role fluid inside its step.</p>
+    </div></div>
+    <div class="body">
+      <h3>Scale · live computed values</h3>
+      <div class="scale">
+        <div><span class="tok">--fs-display</span><span class="demo s-display">Cactus</span><span class="px" data-fs=".s-display">–</span></div>
+        <div><span class="tok">--fs-h1</span><span class="demo s-h1">Section title</span><span class="px" data-fs=".s-h1">–</span></div>
+        <div><span class="tok">--fs-h2</span><span class="demo s-h2">Sub-section title</span><span class="px" data-fs=".s-h2">–</span></div>
+        <div><span class="tok">--fs-lead</span><span class="demo s-lead">Lead paragraph, long line stays readable.</span><span class="px" data-fs=".s-lead">–</span></div>
+        <div><span class="tok">--fs-body</span><span class="demo s-body">Body copy for interfaces and documentation.</span><span class="px" data-fs=".s-body">–</span></div>
+        <div><span class="tok">--fs-sm</span><span class="demo s-sm">Secondary copy, row descriptions.</span><span class="px" data-fs=".s-sm">–</span></div>
+        <div><span class="tok">--fs-mono</span><span class="demo s-mono">01 // META · 400–4k tok/s · 8–29 MB</span><span class="px" data-fs=".s-mono">–</span></div>
+      </div>
+      <h3 style="margin-top:32px">Rules</h3>
+      <ul class="rows">
+        <li><div class="row"><span class="slug">root</span><span><span class="t">html font-size, breakpoint steps</span><span class="d">16px mobile → clamp tablet/desktop → 22–28px TV → 30–44px 4K. Never hard-code px for text.</span></span><span class="k">rem</span><svg class="arr" aria-hidden="true"><use href="#i-arrow"/></svg></div></li>
+        <li><div class="row"><span class="slug">display</span><span><span class="t">Doto 900 for numerals & wordmarks</span><span class="d">Clamped on vw: never overflows a 360px phone, caps at 6rem on desktop.</span></span><span class="k hl">clamp</span><svg class="arr" aria-hidden="true"><use href="#i-arrow"/></svg></div></li>
+        <li><div class="row"><span class="slug">mono</span><span><span class="t">Geist Mono, tabular nums, uppercase</span><span class="d">Metadata, counters, index labels, spec values — columns align on every target.</span></span><span class="k">tnum</span><svg class="arr" aria-hidden="true"><use href="#i-arrow"/></svg></div></li>
+        <li><div class="row"><span class="slug">zoom</span><span><span class="t">User zoom stays enabled</span><span class="d">rem-based scale + no maximum-scale: browser zoom and OS text-size settings keep working.</span></span><span class="k">a11y</span><svg class="arr" aria-hidden="true"><use href="#i-arrow"/></svg></div></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 02 THEME -->
+  <section class="section-block" id="theme" style="--h:107">
+    <div class="section-head"><div class="stick">
+      <div class="top"><span class="sw"></span><span class="mono">02 // THEME</span></div>
+      <h2>Seven themes, one owner</h2>
+      <p>Every colour lives in <span class="mono">:root</span> / <span class="mono">[data-theme]</span>. Any theme works by swapping tokens — no component changes.</p>
+    </div></div>
+    <div class="body">
+      <h3>Palette</h3>
+      <div class="pal">
+        <div><i style="background:var(--bg)"></i><span><b>bg</b><em class="mono" data-token="--bg">–</em></span></div>
+        <div><i style="background:var(--surface)"></i><span><b>surface</b><em class="mono" data-token="--surface">–</em></span></div>
+        <div><i style="background:var(--line-strong)"></i><span><b>line-strong</b><em class="mono" data-token="--line-strong">–</em></span></div>
+        <div><i style="background:var(--text)"></i><span><b>text</b><em class="mono" data-token="--text">–</em></span></div>
+        <div><i style="background:var(--muted)"></i><span><b>muted</b><em class="mono" data-token="--muted">–</em></span></div>
+        <div><i style="background:var(--accent)"></i><span><b>accent LED</b><em class="mono" data-token="--accent">–</em></span></div>
+        <div><i style="background:var(--dot)"></i><span><b>dot grid</b><em class="mono" data-token="--dot">–</em></span></div>
+      </div>
+      <div class="tpills" role="group" aria-label="Pick a theme">
+        <button type="button" data-set="light" style="--pc:#f3f2ef">Light</button>
+        <button type="button" data-set="mango" style="--pc:#f7f3ea">Mango</button>
+        <button type="button" data-set="limoncello" style="--pc:#fffef9">Limoncello</button>
+        <button type="button" data-set="aperol" style="--pc:#fff7f2">Aperol</button>
+        <button type="button" data-set="spritz" style="--pc:#fffdf9">Aperol Spritz</button>
+        <button type="button" data-set="dark" style="--pc:#0e0e0e">Dark</button>
+        <button type="button" data-set="cactus" style="--pc:#0a0e0b">Cactus</button>
+      </div>
+      <div class="spec" style="margin-top:28px">
+        <div><dt>Default</dt><dd>follows prefers-color-scheme · override in localStorage</dd></div>
+        <div><dt>Contrast</dt><dd>≥ 4.5:1 body · ≥ 3:1 large display type</dd></div>
+        <div><dt>Chrome</dt><dd>meta theme-color follows the active theme</dd></div>
+        <div><dt>Hue wheel</dt><dd>oklch(0.76 0.12 h) dark · oklch(0.48 0.14 h) light</dd></div>
+      </div>
+      <div class="code" style="margin-top:28px">
+        <header><span>tokens.css</span><button class="btn" id="copy" type="button" style="min-height:32px;padding:0 12px">Copy</button></header>
+        <pre><code id="snippet"><span class="c">/* swap tokens only — components never see a colour literal */</span>
+:root, [data-theme="light"] {
+  --bg: <span class="v">#f3f2ef</span>; --surface: <span class="v">#fbfaf8</span>; --line: <span class="v">#d9d6d0</span>;
+  --text: <span class="v">#141413</span>; --muted: <span class="v">#5f5b55</span>; --accent: <span class="v">#e5481a</span>; --dot: <span class="v">#cfcbc4</span>;
+}
+[data-theme="mango"] {
+  --bg: <span class="v">#f7f3ea</span>; --surface: <span class="v">#fffdf8</span>; --line: <span class="v">#e7dfce</span>;
+  --text: <span class="v">#171310</span>; --muted: <span class="v">#6b6154</span>; --accent: <span class="v">#d2700a</span>; --dot: <span class="v">#ded5c2</span>;
+}
+[data-theme="limoncello"] {
+  --bg: <span class="v">#fffef9</span>; --surface: <span class="v">#ffffff</span>; --line: <span class="v">#f4f0dd</span>;
+  --text: <span class="v">#191708</span>; --muted: <span class="v">#77704d</span>; --accent: <span class="v">#b08d00</span>; --dot: <span class="v">#ebe6c8</span>;
+}
+[data-theme="aperol"] {
+  --bg: <span class="v">#fff7f2</span>; --surface: <span class="v">#fffdfb</span>; --line: <span class="v">#f2e2d8</span>;
+  --text: <span class="v">#1a0f0a</span>; --muted: <span class="v">#6d564b</span>; --accent: <span class="v">#e24a18</span>; --dot: <span class="v">#eddcd2</span>;
+}
+[data-theme="spritz"] {
+  --bg: <span class="v">#fffdf9</span>; --surface: <span class="v">#ffffff</span>; --line: <span class="v">#f4e6dc</span>;
+  --text: <span class="v">#1b110b</span>; --muted: <span class="v">#6e5a4f</span>; --accent: <span class="v">#f2622b</span>; --dot: <span class="v">#f0e0d5</span>;
+}
+[data-theme="dark"] {
+  --bg: <span class="v">#0e0e0e</span>; --surface: <span class="v">#151515</span>; --line: <span class="v">#262626</span>;
+  --text: <span class="v">#ecebe8</span>; --muted: <span class="v">#9a968f</span>; --accent: <span class="v">#ff5a1f</span>; --dot: <span class="v">#2b2b2b</span>;
+}
+[data-theme="cactus"] {
+  --bg: <span class="v">#0a0e0b</span>; --surface: <span class="v">#101512</span>; --line: <span class="v">#1f2a22</span>;
+  --text: <span class="v">#e9f0e9</span>; --muted: <span class="v">#93a294</span>; --accent: <span class="v">#35d06a</span>; --dot: <span class="v">#1c2a20</span>;
+}</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 TARGETS -->
+  <section class="section-block" id="targets" style="--h:179">
+    <div class="section-head"><div class="stick">
+      <div class="top"><span class="sw"></span><span class="mono">03 // TARGETS</span></div>
+      <h2>One page, six targets</h2>
+      <p>Breakpoints are shared by CSS and the live readout, so what you see is what the layout reports.</p>
+    </div></div>
+    <div class="body">
+      <div class="tbl-scroll">
+        <table class="tbl">
+          <thead><tr><th>Class</th><th>Width</th><th>Root font</th><th class="hide-s">Target</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Mobile</strong></td><td class="num">&lt; 600px</td><td class="num">16px</td><td class="hide-s">phone · iOS / Android browser</td><td>1-col, 44px targets, safe-area insets, rows stack</td></tr>
+            <tr><td><strong>Tablet</strong></td><td class="num">600–1023px</td><td class="num">16–18px</td><td class="hide-s">tablet portrait/landscape</td><td>clamp() ramps with vw, sticky head disabled below 1024</td></tr>
+            <tr><td><strong>Desktop</strong></td><td class="num">1024–1599px</td><td class="num">17–20px</td><td class="hide-s">laptop / monitor</td><td>2-col sections, sticky sidebar, hover kinetics</td></tr>
+            <tr><td><strong>TV 1080p</strong></td><td class="num">1600–2559px</td><td class="num">22–28px</td><td class="hide-s">LG webOS · Samsung Tizen</td><td>wrap 1500px, 56px targets, 3px focus ring, line-height 1.7</td></tr>
+            <tr><td><strong>TV 4K</strong></td><td class="num">≥ 2560px</td><td class="num">30–44px</td><td class="hide-s">4K TV browser</td><td>root jumps again — every rem-based size follows</td></tr>
+            <tr><td><strong>Coarse pointer</strong></td><td class="num">any</td><td class="num">—</td><td class="hide-s">touch / remote</td><td>44–56px min hit area, tap instead of hover, hover removed on rows</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul class="rows" style="margin-top:26px">
+        <li><div class="row"><span class="slug">safe-area</span><span><span class="t">env(safe-area-inset-*)</span><span class="d">viewport-fit=cover keeps content off notches and TV overscan edges.</span></span><span class="k">inset</span><svg class="arr" aria-hidden="true"><use href="#i-arrow"/></svg></div></li>
+        <li><div class="row"><span class="slug">remote</span><span><span class="t">Focus visible from 3 m</span><span class="d">3px orange outline + 4px offset above 1600px; tab order untouched for D-pad / spatial navigation.</span></span><span class="k hl">TV</span><svg class="arr" aria-hidden="true"><use href="#i-arrow"/></svg></div></li>
+        <li><div class="row"><span class="slug">fonts</span><span><span class="t">System fallbacks if the CDN is blocked</span><span class="d">Doto → Geist Mono, Geist → system-ui: layout never collapses on a smart-TV browser.</span></span><span class="k">fallback</span><svg class="arr" aria-hidden="true"><use href="#i-arrow"/></svg></div></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 04 COMPONENTS -->
+  <section class="section-block" id="components" style="--h:251">
+    <div class="section-head"><div class="stick">
+      <div class="top"><span class="sw"></span><span class="mono">04 // COMPONENTS</span></div>
+      <h2>Hairlines over shadows</h2>
+      <p>Kinetic rows, spec tables and code blocks — structure from 1px lines, motion from ease-out-expo.</p>
+    </div></div>
+    <div class="body">
+      <h3>Spec · Needle-style definition rows</h3>
+      <dl class="spec">
+        <div><dt>Themes</dt><dd>7 · light · mango · limoncello · aperol · spritz · dark · cactus</dd></div>
+        <div><dt>Type roles</dt><dd>7 · display → mono</dd></div>
+        <div><dt>Breakpoints</dt><dd>5 · 600 / 1024 / 1600 / 2560</dd></div>
+        <div><dt>Touch target</dt><dd>44 → 56 px</dd></div>
+        <div><dt>Framework</dt><dd>0 · vanilla HTML/CSS/JS</dd></div>
+      </dl>
+      <h3 style="margin-top:32px">Kinetic rows · hover / focus</h3>
+      <ul class="rows">
+        <li><a class="row" href="#typography"><span class="slug">dot-grid</span><span><span class="t">Radial dot background</span><span class="d">1.2px dots on a 16px grid, hero + splash only.</span></span><span class="k">16px</span><svg class="arr" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+        <li><a class="row" href="#theme"><span class="slug">led-dot</span><span><span class="t">Orange LED identity mark</span><span class="d">Status, selected state and wordmark handle — never a checkmark.</span></span><span class="k hl">#FF5A1F</span><svg class="arr" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+        <li><a class="row" href="#targets"><span class="slug">ease-out-expo</span><span><span class="t">cubic-bezier(.16, 1, .3, 1)</span><span class="d">Wipe-in titles, row background expanding from the left.</span></span><span class="k">motion</span><svg class="arr" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+        <li><a class="row" href="#signature"><span class="slug">reduced-motion</span><span><span class="t">prefers-reduced-motion kills all of it</span><span class="d">Animations collapse to 0.001ms; splash is bypassed.</span></span><span class="k">a11y</span><svg class="arr" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+        <li><a class="row" href="#signature"><span class="slug">no-js</span><span><span class="t">Layout works with JS disabled</span><span class="d">Theme falls back to light via CSS, content is plain HTML.</span></span><span class="k">progressive</span><svg class="arr" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 05 SIGNATURE -->
+  <section class="section-block" id="signature" style="--h:323">
+    <div class="section-head"><div class="stick">
+      <div class="top"><span class="sw"></span><span class="mono">05 // SIGNATURE</span></div>
+      <h2>Recognisable at a glance</h2>
+      <p>Four marks carry the whole identity: hairline, dot grid, LED, hue wheel.</p>
+    </div></div>
+    <div class="body">
+      <div class="sig">
+        <article><h4>Dot grid</h4><div class="dotgrid"></div></article>
+        <article><h4>Hairlines</h4><div class="hair"><i></i><i></i><i></i><i></i></div></article>
+        <article><h4>LED</h4><div class="ledrow"><span class="led"></span> CACTUS.SYS · READY</div></article>
+        <article><h4>Hue wheel</h4>
+          <ul class="hue">
+            <li style="--h:35"><i></i>35</li><li style="--h:107"><i></i>107</li>
+            <li style="--h:179"><i></i>179</li><li style="--h:251"><i></i>251</li>
+            <li style="--h:323"><i></i>323</li>
+          </ul>
+        </article>
+      </div>
+      <p style="margin-top:24px"><strong>Section hue</strong> = <span class="mono">h = 35 + i × 360 / n</span> — swatch dots, index labels, focused row titles, splash progress segments. Never body text.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span id="foot-brand">Cactus theme · Technical Minimal · 7 themes</span>
+    <span class="mono">Tokens in :root · no framework · no tracking</span>
+  </div>
+</footer>
+
+<script>
+
+  /* 5x7 dot-matrix renderer (same algorithm as the skill generator) */
+  window.dotMatrix = (function () {
+    var GLYPHS = {"0":["01110","10011","10101","10001","10101","11001","01110"],"1":["00100","01100","00100","00100","00100","00100","01110"],"2":["01110","10001","00001","00110","01000","10000","11111"],"3":["01110","10001","00001","00110","00001","10001","01110"],"4":["00010","00110","01010","10010","11111","00010","00010"],"5":["11111","10000","11110","00001","00001","10001","01110"],"6":["01110","10000","11110","10001","10001","10001","01110"],"7":["11111","00001","00010","00100","01000","01000","01000"],"8":["01110","10001","10001","01110","10001","10001","01110"],"9":["01110","10001","10001","01111","00001","00001","01110"]," ":["00000","00000","00000","00000","00000","00000","00000"],"A":["01110","10001","10001","11111","10001","10001","10001"],"B":["11110","10001","10001","11110","10001","10001","11110"],"C":["01111","10000","10000","10000","10000","10000","01111"],"D":["11110","10001","10001","10001","10001","10001","11110"],"E":["11111","10000","10000","11110","10000","10000","11111"],"F":["11111","10000","10000","11110","10000","10000","10000"],"G":["01111","10000","10000","10111","10001","10001","01111"],"H":["10001","10001","10001","11111","10001","10001","10001"],"I":["01110","00100","00100","00100","00100","00100","01110"],"J":["00111","00010","00010","00010","00010","10010","01100"],"K":["10001","10010","10100","11000","10100","10010","10001"],"L":["10000","10000","10000","10000","10000","10000","11111"],"M":["10001","11011","10101","10001","10001","10001","10001"],"N":["10001","11001","10101","10011","10001","10001","10001"],"O":["01110","10001","10001","10001","10001","10001","01110"],"P":["11110","10001","10001","11110","10000","10000","10000"],"Q":["01110","10001","10001","10001","10101","10010","01101"],"R":["11110","10001","10001","11110","10100","10010","10001"],"S":["01111","10000","10000","01110","00001","00001","11110"],"T":["11111","00100","00100","00100","00100","00100","00100"],"U":["10001","10001","10001","10001","10001","10001","01110"],"V":["10001","10001","10001","10001","10001","01010","00100"],"W":["10001","10001","10001","10101","10101","11011","10001"],"X":["10001","10001","01010","00100","01010","10001","10001"],"Y":["10001","10001","01010","00100","00100","00100","00100"],"Z":["11111","00001","00010","00100","01000","10000","11111"],".":["00","00","00","00","00","11","11"],":":["00","11","11","00","11","11","00"],"-":["00000","00000","00000","11111","00000","00000","00000"],"_":["00000","00000","00000","00000","00000","00000","11111"],"!":["11","11","11","11","00","11","11"],"/":["00001","00010","00100","01000","10000","00000","00000"]};
+    return function (text) {
+      var pitch = 10, r = 3.6, rows = 7, cols = [], i, c;
+      text = String(text).toUpperCase();
+      for (i = 0; i < text.length; i++) {
+        var ch = text.charAt(i), g = GLYPHS[ch] || GLYPHS[' '], w = g[0].length;
+        for (c = 0; c < w; c++) {
+          cols.push({ bits: g.map(function (row) { return row.charAt(c) === '1'; }), hot: ch === '.' });
+        }
+        if (i < text.length - 1) cols.push({ bits: [0,1,2,3,4,5,6].map(function () { return false; }), hot: false });
+      }
+      var width = cols.length * pitch, height = rows * pitch, out = '';
+      cols.forEach(function (col, x) {
+        col.bits.forEach(function (on, y) {
+          if (!on) return;
+          var j = (((x + 1) * 73856093) ^ ((y + 1) * 19349663)) >>> 0, d = x * 15 + (j % 160);
+          out += '<circle class="on' + (col.hot ? ' hot' : '') + '" cx="' + (x * pitch + pitch / 2) +
+                 '" cy="' + (y * pitch + pitch / 2) + '" r="' + r + '" style="--d:' + d + 'ms"/>';
+        });
+      });
+      return '<svg class="sp-mx" viewBox="0 0 ' + width + ' ' + height + '" focusable="false" aria-hidden="true">' +
+             '<defs><pattern id="sp-grid" width="' + pitch + '" height="' + pitch + '" patternUnits="userSpaceOnUse">' +
+             '<circle cx="5" cy="5" r="' + r + '"/></pattern></defs>' +
+             '<rect class="off" width="' + width + '" height="' + height + '" fill="url(#sp-grid)"/>' + out + '</svg>';
+    };
+  })();
+
+  /* ---------------- theme cycle: light → mango → limoncello → aperol → spritz → dark → cactus ---------------- */
+  (function () {
+    var ORDER = ['light', 'mango', 'limoncello', 'aperol', 'spritz', 'dark', 'cactus'],
+        BG = { light:'#f3f2ef', mango:'#f7f3ea', limoncello:'#fffef9', aperol:'#fff7f2',
+               spritz:'#fffdf9', dark:'#0e0e0e', cactus:'#0a0e0b' },
+        LABEL = { light:'Light', mango:'Mango', limoncello:'Limoncello', aperol:'Aperol',
+                  spritz:'Aperol Spritz', dark:'Dark', cactus:'Cactus' },
+        root = document.documentElement, btn = document.getElementById('theme'),
+        label = document.getElementById('theme-label'), cta = document.getElementById('cta-theme');
+    function sync() {
+      var t = root.dataset.theme, name = LABEL[t] || 'Light';
+      label.textContent = name;
+      btn.setAttribute('aria-pressed', t !== 'light');
+      document.getElementById('theme-color').content = BG[t] || BG.light;
+      document.querySelectorAll('[data-set]').forEach(function (p) {
+        p.setAttribute('aria-current', p.getAttribute('data-set') === t ? 'true' : 'false');
+      });
+      var r = document.getElementById('r-theme'); if (r) r.textContent = (t || 'light').toUpperCase();
+      /* every visible mention of the theme follows the switch */
+      var hero = document.getElementById('hero-name');   if (hero) hero.textContent = name;
+      var br   = document.getElementById('brand');       if (br) br.textContent = name.toUpperCase() + ' // THEME';
+      var spbr = document.getElementById('brand-splash');if (spbr) spbr.textContent = name.toUpperCase() + '.SYS';
+      var ft   = document.getElementById('foot-brand');  if (ft) ft.textContent = name + ' theme · Technical Minimal · 7 themes';
+      document.title = name + ' — Technical Minimal theme';
+      var mx = document.getElementById('sp-mx');         /* splash matrix re-spells the active theme */
+      if (mx && window.dotMatrix) mx.innerHTML = window.dotMatrix(name.toUpperCase() + '.');
+    }
+    function set(t) {
+      if (ORDER.indexOf(t) < 0) return;
+      root.dataset.theme = t;
+      try { localStorage.setItem('cactus-theme', t); } catch (e) {}
+      sync(); readout();
+    }
+    function flip() { var i = ORDER.indexOf(root.dataset.theme); set(ORDER[(i + 1) % ORDER.length]); }
+    btn.addEventListener('click', flip);
+    cta.addEventListener('click', flip);
+    document.querySelectorAll('[data-set]').forEach(function (p) {
+      p.addEventListener('click', function () { set(p.getAttribute('data-set')); });
+    });
+    sync();
+  })();
+
+  /* ---------------- live readout + computed type scale ---------------- */
+  function bpName(w) { return w < 600 ? 'MOBILE' : w < 1024 ? 'TABLET' : w < 1600 ? 'DESKTOP' : w < 2560 ? 'TV 1080P' : 'TV 4K'; }
+  function readout() {
+    var de = document.documentElement, cs = getComputedStyle(de), w = innerWidth;
+    var set = function (id, v) { var el = document.getElementById(id); if (el) el.textContent = v; };
+    set('r-w', Math.round(w) + 'px');
+    set('r-bp', bpName(w));
+    set('r-root', Math.round(parseFloat(cs.fontSize)) + 'px');
+    set('r-theme', (de.dataset.theme || 'light').toUpperCase());
+    set('r-pointer', matchMedia('(pointer:coarse)').matches ? 'coarse' : 'fine');
+    set('r-motion', matchMedia('(prefers-reduced-motion: reduce)').matches ? 'reduced' : 'full');
+    set('r-dpr', (devicePixelRatio || 1).toFixed(2));
+    document.querySelectorAll('[data-fs]').forEach(function (el) {
+      var t = document.querySelector(el.getAttribute('data-fs'));
+      if (t) el.textContent = Math.round(parseFloat(getComputedStyle(t).fontSize)) + 'px';
+    });
+    document.querySelectorAll('[data-token]').forEach(function (el) {
+      el.textContent = cs.getPropertyValue(el.getAttribute('data-token')).trim();
+    });
+  }
+  addEventListener('resize', readout);
+  addEventListener('orientationchange', readout);
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
+    var stored = null; try { stored = localStorage.getItem('cactus-theme'); } catch (err) {}
+    if (!stored) { document.documentElement.dataset.theme = e.matches ? 'dark' : 'light'; readout(); }
+  });
+  readout();
+  addEventListener('load', readout);
+
+  /* ---------------- copy snippet ---------------- */
+  (function () {
+    var b = document.getElementById('copy'), s = document.getElementById('snippet');
+    if (!b || !s || !navigator.clipboard) return;
+    b.addEventListener('click', function () {
+      navigator.clipboard.writeText(s.innerText).then(function () {
+        b.textContent = 'Copied'; setTimeout(function () { b.textContent = 'Copy'; }, 1400);
+      });
+    });
+  })();
+
+  /* ---------------- splash ---------------- */
+  (function () {
+    var root = document.documentElement, sp = document.getElementById('splash');
+    if (!root || !sp) return;
+    if (!root.classList.contains('is-splash')) { sp.remove(); return; }
+    var steps = ['Type', 'Theme', 'Targets', 'Components', 'Signature'],
+        total = steps.length, timers = [], done = false,
+        label = document.getElementById('sp-label'), count = document.getElementById('sp-count');
+    function pad(n) { return (n < 10 ? '0' : '') + n; }
+    function at(ms, fn) { timers.push(setTimeout(fn, ms)); }
+    steps.forEach(function (title, i) {
+      at(200 + i * 160, function () { label.textContent = title; count.textContent = pad(i + 1) + '/' + pad(total); });
+    });
+    at(1500, function () { label.textContent = 'Ready'; sp.classList.add('ready'); });
+    at(2400, close);
+    function close() {
+      if (done) return; done = true;
+      timers.forEach(clearTimeout);
+      sp.classList.add('out');
+      setTimeout(function () { root.classList.remove('is-splash'); sp.remove(); }, 480);
+      ['pointerdown', 'keydown', 'wheel', 'touchmove'].forEach(function (ev) { removeEventListener(ev, close, true); });
+    }
+    ['pointerdown', 'keydown', 'wheel', 'touchmove'].forEach(function (ev) { addEventListener(ev, close, { capture: true, passive: true }); });
+  })();
+</script>
+</body>
+</html>
