@@ -1,4 +1,4 @@
-# Cactus — Technical Minimal theme pack
+# Technical Minimal theme pack v2.0
 
 A single-file, framework-free implementation of the **Technical Minimal** design language
 (Nothing / Teenage Engineering aesthetic, after [mich-de.github.io](https://mich-de.github.io)):
@@ -71,6 +71,9 @@ by the same breakpoint names the CSS uses.
 - **Dot-matrix boot splash** on every page load — 5×7 glyphs rendered at runtime from the
   active theme name ("CACTUS.", "APEROL SPRITZ."), segmented hue progress bar, blinking LED,
   skip on any key / tap / scroll, 6s hard fallback, bypassed for `prefers-reduced-motion`.
+- **Dot-matrix hero title** — the theme name renders as a 5×7 dot readout that ignites
+  letter by letter (first → last), then runs a slow dim/relight wave across the dots;
+  re-spells and replays on every theme switch. The text stays in the DOM for screen readers.
 - **Index quick-nav** with per-section hue swatches and tabular counts.
 - **Two-column sections**: sticky technical head (`01 // TYPOGRAPHY`) + kinetic rows whose
   background wipes in from the left with `cubic-bezier(.16, 1, .3, 1)`.
