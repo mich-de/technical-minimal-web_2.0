@@ -71,9 +71,11 @@ by the same breakpoint names the CSS uses.
 - **Dot-matrix boot splash** on every page load — 5×7 glyphs rendered at runtime from the
   active theme name ("CACTUS.", "APEROL SPRITZ."), segmented hue progress bar, blinking LED,
   skip on any key / tap / scroll, 6s hard fallback, bypassed for `prefers-reduced-motion`.
-- **Dot-matrix hero title** — the theme name renders as a 5×7 dot readout that ignites
-  letter by letter (first → last), then runs a slow dim/relight wave across the dots;
-  re-spells and replays on every theme switch. The text stays in the DOM for screen readers.
+- **LED hero title** — the Doto headline behaves like a dot lamp array: a soft light band
+  sweeps across the glyphs continuously (left → right), so the dots light up and switch off
+  like little lamps. The theme name is the lit word, `theme.` glows in the accent colour
+  (with a glow on dark / cactus). Re-syncs on every theme switch; the sweep freezes fully
+  lit for `prefers-reduced-motion` and for `?noanim=1`.
 - **Index quick-nav** with per-section hue swatches and tabular counts.
 - **Two-column sections**: sticky technical head (`01 // TYPOGRAPHY`) + kinetic rows whose
   background wipes in from the left with `cubic-bezier(.16, 1, .3, 1)`.
@@ -112,6 +114,36 @@ with system fallbacks so a blocked CDN never breaks the layout.
 
 ---
 
+## MCP server
+
+[`mcp/`](./mcp) ships a **Model Context Protocol server** that exposes the theme pack to
+AI agents: it parses the token blocks straight out of `index.html` at call time, so it can
+never drift from the demo.
+
+```bash
+cd mcp && npm install && npm start   # stdio transport
+```
+
+| Tool | Returns |
+| --- | --- |
+| `list_themes` | the 7 themes: key, name, `bg`, `surface`, `accent`, `text`, `muted` |
+| `get_theme_tokens` | the CSS block of one theme (`?theme=limoncello`) |
+| `get_tokens_css` | full `:root` + all 7 `[data-theme]` blocks, paste-ready |
+| `get_fluid_type` | the `html{font-size}` breakpoint steps (phone → 4K TV) |
+| `get_demo` | paths, theme cycle, URL parameters |
+
+Register it (OpenCode `opencode.jsonc`, or any MCP client):
+
+```jsonc
+"technical-minimal-web": {
+  "type": "local",
+  "command": ["node", "/path/to/technical-minimal-web_2.0/mcp/server.js"],
+  "enabled": true
+}
+```
+
+---
+
 ## Gallery
 
 | | |
@@ -130,6 +162,7 @@ dark / light / cactus, full-page captures.
 
 ```
 index.html      # everything: tokens, layout, splash, theme engine (single file)
+mcp/            # MCP server exposing the theme pack (list_themes, get_tokens_css, …)
 shots/          # verification screenshots (viewports × themes) + contact sheet
 README.md
 ```
