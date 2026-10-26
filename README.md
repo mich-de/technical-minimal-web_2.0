@@ -26,7 +26,7 @@ components never contain a colour literal, so a new theme is one CSS block.
 | `dark` | Dark | graphite | `#0e0e0e` | `#ff5a1f` |
 | `cactus` | Cactus | green-black, green LED | `#0a0e0b` | `#35d06a` |
 
-- **Default** follows `prefers-color-scheme`, then persists in `localStorage`.
+- **Default** is always `light` on first load; your choice then persists in `localStorage`.
 - **Switch** from the top-bar pill, the hero button, or the seven theme pills in section 02.
   The cycle is `light → mango → limoncello → aperol → spritz → dark → cactus`.
 - **Contrast**: body text ≥ 4.5:1, display type and accents ≥ 3:1, text on accent fills ≥ 5:1.

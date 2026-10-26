@@ -14,7 +14,7 @@
     try { t = localStorage.getItem('cactus-theme'); } catch (e) {}
     var q = location.search.match(/[?&]theme=(light|mango|limoncello|aperol|spritz|dark|cactus)/);
     if (q) t = q[1];
-    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    if (!t) t = 'light';                                 /* default: light every first load */
     if (location.search.indexOf('nosplash') > -1) seen = '1';   /* skip: ?nosplash=1 (print/screenshot) */
     if (location.search.indexOf('noanim') > -1) d.classList.add('no-anim'); /* print / screenshot hook */
     d.dataset.theme = t;
@@ -563,7 +563,7 @@
         <button type="button" data-set="cactus" style="--pc:#0a0e0b">Cactus</button>
       </div>
       <div class="spec" style="margin-top:28px">
-        <div><dt>Default</dt><dd>follows prefers-color-scheme · override in localStorage</dd></div>
+        <div><dt>Default</dt><dd>light on every first load · choice persists in localStorage</dd></div>
         <div><dt>Contrast</dt><dd>≥ 4.5:1 body · ≥ 3:1 large display type</dd></div>
         <div><dt>Chrome</dt><dd>meta theme-color follows the active theme</dd></div>
         <div><dt>Hue wheel</dt><dd>oklch(0.76 0.12 h) dark · oklch(0.48 0.14 h) light</dd></div>
@@ -790,10 +790,6 @@
   }
   addEventListener('resize', readout);
   addEventListener('orientationchange', readout);
-  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
-    var stored = null; try { stored = localStorage.getItem('cactus-theme'); } catch (err) {}
-    if (!stored) { document.documentElement.dataset.theme = e.matches ? 'dark' : 'light'; readout(); }
-  });
   readout();
   addEventListener('load', readout);
 
